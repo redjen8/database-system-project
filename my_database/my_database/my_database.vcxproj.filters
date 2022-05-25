@@ -18,9 +18,18 @@
     <ClCompile Include="record.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="slotted_page.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="test_record.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="record.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="slotted_page.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
