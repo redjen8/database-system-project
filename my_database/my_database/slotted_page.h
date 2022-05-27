@@ -10,17 +10,11 @@ typedef struct page_meta_data
 	int free_space_end_addr;
 }page_meta_data;
 
-typedef struct record_location
-{
-	int byte;
-	int offset;
-}record_location;
-
 class SlottedPage
 {
 private:
 	page_meta_data meta_data;
-	std::vector<record_location> record_ptr_arr;
+	std::vector<Record> record_arr;
 
 public:
 	SlottedPage();

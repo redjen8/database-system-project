@@ -23,9 +23,9 @@ void SlottedPage::print_slotted_page()
 	std::cout << "entry size : " << meta_data.entry_size << std::endl;
 	std::cout << "free space end address : " << meta_data.free_space_end_addr << std::endl;
 	int cnt = 0;
-	for (std::vector<record_location>::const_iterator i = record_ptr_arr.begin(); i != record_ptr_arr.end(); i++)
+	for (int i = 0 ; i != record_arr.size(); i++)
 	{
-		std::cout << "record " << cnt << "byte : " << (*i).byte << "offset : " << (*i).offset << std::endl;
+		std::cout << "record " << cnt << "size : " << record_arr[i].get_record_size() << std::endl;
 		cnt++;
 	}
 }
@@ -42,6 +42,15 @@ int SlottedPage::write_page_on_disk()
 	fout.write(",", 1);
 	fout.write(std::to_string(meta_data.free_space_end_addr).c_str(), std::to_string(meta_data.free_space_end_addr).length());
 	fout.write("}", 1);
+
+	int record_start_idx = meta_data.page_size;
+	for (int i = 0; i < meta_data.entry_size; i++)
+	{
+		
+		fout.write("(", 1);
+
+		fout.write(")", 1);
+	}
 
 	std::string null_bitmap = std::bitset<32>(0x000000E1).to_string();
 	fout.write(null_bitmap.c_str(), null_bitmap.length());
