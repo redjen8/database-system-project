@@ -18,5 +18,6 @@ public:
 	std::vector<std::string>* var_len_column;
 public:
 	Record(std::vector<std::string>* input_fixed, std::vector<std::string>* input_variable, column_meta column_info);
+	int get_record_size();
 	void print_record();
 };

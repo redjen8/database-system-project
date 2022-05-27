@@ -37,3 +37,18 @@ void Record::print_record()
 		std::cout << *i << std::endl;
 	}
 }
+
+int Record::get_record_size()
+{
+	int record_length = 0;
+	for (int i = 0; i < (*fixed_len_column).size(); i++)
+	{
+		record_length += (*fixed_len_column)[i].size();
+	}
+	for (int i = 0; i < (*var_len_column).size(); i++)
+	{
+		record_length += (*var_len_column)[i].size();
+	}
+	record_length += sizeof(column_meta);
+	return record_length;
+}
