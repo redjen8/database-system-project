@@ -12,7 +12,7 @@ typedef struct column_meta
 
 class Record
 {
-private:
+public:
 	int null_bitmap;
 	std::vector<std::string>* fixed_len_column;
 	std::vector<std::string>* var_len_column;

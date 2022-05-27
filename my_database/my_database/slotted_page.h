@@ -23,8 +23,9 @@ private:
 	std::vector<record_location> record_ptr_arr;
 
 public:
-	SlottedPage(page_meta_data input_meta);
+	SlottedPage();
 	Record* get_record_list();
 	void print_slotted_page();
 	int write_page_on_disk();
+	int add_record(Record tRecord);
 };

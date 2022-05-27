@@ -12,8 +12,10 @@ int main()
 	Record new_record = Record(&fixed_column, &variable_column, column_meta{ 2,4 });
 	new_record.print_record();
 
-	SlottedPage my_page = SlottedPage(page_meta_data{ PAGE_SIZE, 0, 0 });
-	my_page.print_slotted_page();
-	my_page.get_record_list();
+	SlottedPage my_page = SlottedPage();
+	my_page.add_record(new_record);
+	//my_page.print_slotted_page();
+	//my_page.get_record_list();
+	my_page.write_page_on_disk();
 	return 0;
 }
