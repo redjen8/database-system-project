@@ -7,7 +7,8 @@ int main()
 	
 	std::vector<std::string> column_name = { "student_id", "grade", "name", "major" };
 	std::vector<bool> column_type = { false, false, true, true };
-	column_info column_meta = column_info{column_name, column_type};
+	std::vector<int> fixed_column_length = {5, 1};
+	column_info column_meta = column_info{column_name, column_type, fixed_column_length};
 
 	std::vector<std::string> input;
 	input.push_back("00122");

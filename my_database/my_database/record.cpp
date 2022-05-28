@@ -10,6 +10,7 @@ Record::Record(std::vector<std::string> input, column_info column_meta) {
 	int null_bitmap_mask = 0x00000000;
 	int epbit = 1;
 	int fixed_column_cnt = 0;
+	int var_column_start_location = 8; // null bitmap 이후부터 시작
 	for (int i = 0; i < column_meta.column_type.size(); i++)
 	{
 		if (input[i].compare("") == 0 || input[i].length() == 0)
@@ -26,11 +27,17 @@ Record::Record(std::vector<std::string> input, column_info column_meta) {
 		else
 		{
 			fixed_len_column.push_back(make_pair(input[i], column_meta.fixed_column_length[fixed_column_cnt]));
+			var_column_start_location += column_meta.fixed_column_length[fixed_column_cnt];
 		}
 		null_bitmap_mask += epbit;
 		epbit *= 2;
 	}
 	null_bitmap = ~null_bitmap_mask;
+	for (int i = 0; i < var_len_column.size(); i++)
+	{
+		var_len_column_loc.push_back(location_meta_data{var_column_start_location, 8});
+		var_column_start_location += 8;
+	}
 }
 
 void Record::print_record()
@@ -90,16 +97,21 @@ std::vector<std::string> Record::get_var_column_list()
 	return var_len_column;
 }
 
-const char* Record::c_str()
+std::string Record::to_string()
 {
 	std::string result = std::format("{:x}", null_bitmap);
 	for (int i = 0; i < fixed_len_column.size(); i++)
 	{
-
+		result.append(std::format("{0:>4}", fixed_len_column[i].first).c_str());
+	}
+	for (int i = 0; i < var_len_column_loc.size(); i++)
+	{
+		result.append(std::to_string(var_len_column_loc[i].offset));
+		result.append(std::to_string(var_len_column_loc[i].length));
 	}
 	for (int i = 0; i < var_len_column.size(); i++)
 	{
-
+		result.append(var_len_column[i]);
 	}
-	return "";
+	return result;
 }

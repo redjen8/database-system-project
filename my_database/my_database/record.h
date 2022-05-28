@@ -21,7 +21,7 @@ typedef struct column_info
 class Record
 {
 private:
-	int null_bitmap;
+	unsigned int null_bitmap;
 	std::vector<std::pair<std::string, int>> fixed_len_column;
 	std::vector<std::string> var_len_column;
 	std::vector<location_meta_data> var_len_column_loc;
@@ -32,5 +32,5 @@ public:
 	int get_null_bitmap();
 	std::vector<std::string> get_fixed_column_list();
 	std::vector<std::string> get_var_column_list();
-	const char* c_str();
+	std::string to_string();
 };

@@ -56,21 +56,22 @@ int SlottedPage::write_page_on_disk()
 		if (record_ptr_arr[i].is_deleted) is_deleted = "1";
 		else is_deleted = "0";
 		fout.write(is_deleted.c_str(), is_deleted.length());
-		fout.write(")", 1);
+		fout.write(")", 1); 
 	}
 
 	//std::string null_bitmap = std::bitset<32>(0x000000E1).to_string();
 	//fout.write(null_bitmap.c_str(), null_bitmap.length());
-	fout.seekg(meta_data.page_size);
+	int current_seek = meta_data.page_size;
 	for (int i = 0; i < meta_data.entry_size; i++)
 	{
 		if (record_ptr_arr[i].is_deleted) continue;
-		const char* write_buffer = record_arr[i].c_str();
+		std::string write_buffer = record_arr[i].to_string();
 		int buffer_offset = record_ptr_arr[i].offset;
 		int buffer_length = record_ptr_arr[i].length;
 		
-		fout.write(write_buffer, sizeof(write_buffer));
-		fout.seekg(-buffer_length);
+		current_seek -= buffer_length;
+		fout.seekg(current_seek);
+		fout.write(write_buffer.c_str(), write_buffer.length());
 	}
 	fout.close();
 	return 0;
