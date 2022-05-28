@@ -66,3 +66,8 @@ int SlottedPage::add_record(Record tRecord)
 	std::cout << sizeof(tRecord.fixed_len_column) << std::endl;
 	return 0;
 }
+
+int SlottedPage::read_from_disk()
+{
+	return 0;
+}
