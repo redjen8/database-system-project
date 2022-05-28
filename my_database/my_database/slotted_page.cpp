@@ -46,9 +46,15 @@ int SlottedPage::write_page_on_disk()
 	int record_start_idx = meta_data.page_size;
 	for (int i = 0; i < meta_data.entry_size; i++)
 	{
-		
 		fout.write("(", 1);
-
+		fout.write(std::to_string(record_ptr_arr[i].offset).c_str(), std::to_string(record_ptr_arr[i].offset).length());
+		fout.write(",", 1);
+		fout.write(std::to_string(record_ptr_arr[i].length).c_str(), std::to_string(record_ptr_arr[i].length).length());
+		fout.write(",", 1);
+		std::string is_deleted;
+		if (record_ptr_arr[i].is_deleted) is_deleted = "1";
+		else is_deleted = "0";
+		fout.write(is_deleted.c_str(), is_deleted.length());
 		fout.write(")", 1);
 	}
 
