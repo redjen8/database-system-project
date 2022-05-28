@@ -4,20 +4,32 @@
 
 #define MAX_COLUMN_LEN 50
 
-typedef struct column_meta
+typedef struct location_meta_data
 {
-	int num_fixed;
-	int num_variable;
-}column_meta;
+	int offset;
+	int length;
+}location_meta_data;
+
+// 컬럼 이름 목록 column_name, column_type이 true이면 가변 길이 컬럼, false면 고정 길이 칼럼
+typedef struct column_info
+{
+	std::vector<std::string> column_name;
+	std::vector<bool> column_type;
+}column_info;
 
 class Record
 {
-public:
+private:
 	int null_bitmap;
-	std::vector<std::string>* fixed_len_column;
-	std::vector<std::string>* var_len_column;
+	std::vector<std::string> fixed_len_column;
+	std::vector<std::string> var_len_column;
+	std::vector<location_meta_data> var_len_column_loc;
 public:
-	Record(std::vector<std::string>* input_fixed, std::vector<std::string>* input_variable, column_meta column_info);
+	Record(std::vector<std::string> input, column_info column_meta);
 	int get_record_size();
 	void print_record();
+	int get_null_bitmap();
+	std::vector<std::string>* get_fixed_column_list();
+	std::vector<std::string>* get_var_column_list();
+	const char* print_to_disk();
 };

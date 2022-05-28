@@ -1,16 +1,19 @@
 #pragma once
-#include <vector>
 #include "record.h"
+#include <vector>
 
 #define PAGE_SIZE 4096
 
+//페이지 자체 메타 데이터, 페이지 크기, 레코드 개수, free space 마지막 위치, 컬럼 정보
 typedef struct page_meta_data
 {
 	int page_size;
 	int entry_size;
 	int free_space_end_addr;
+	column_info column_meta;
 }page_meta_data;
 
+//페이지 내에 저장된 레코드의 메타 데이터
 typedef struct record_meta_data
 {
 	int offset;
