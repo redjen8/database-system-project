@@ -65,7 +65,7 @@ int SlottedPage::write_page_on_disk()
 	for (int i = 0; i < meta_data.entry_size; i++)
 	{
 		if (record_ptr_arr[i].is_deleted) continue;
-		const char* write_buffer = record_arr[i].print_to_disk();
+		const char* write_buffer = record_arr[i].c_str();
 		int buffer_offset = record_ptr_arr[i].offset;
 		int buffer_length = record_ptr_arr[i].length;
 		
