@@ -143,11 +143,6 @@ std::vector<unsigned char> Record::to_byte_vector()
 			//고정 길이 컬럼 문자열이 컬럼 최대 문자열 길이보다 길 경우 예외 처리
 		}
 
-		if (fixed_len_column[i].first.length() < fixed_len_column[i].second)
-		{
-			//컬럼 최대 문자열 길이가 고정 길이 컬럼 문자열 길이보다 긴 경우
-
-		}
 		for (int j = 0; j < fixed_len_column[i].second; j++)
 		{
 			if (fixed_len_column[i].first.length() < fixed_len_column[i].second)
