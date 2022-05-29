@@ -19,23 +19,16 @@ int main()
 
 	std::vector<std::string> input2;
 	input2.push_back("00123");
-	input2.push_back("3");
+	input2.push_back("2");
 	input2.push_back("");
-	input2.push_back("Computer Science");
+	input2.push_back("Mathmatics");
 	Record record2 = Record(input2, column_meta);
 
-	SlottedPage my_page = SlottedPage();
+	SlottedPage my_page = SlottedPage(0);
 	my_page.add_record(record1);
 	my_page.add_record(record2);
-	//my_page.print_slotted_page();
+	my_page.print_slotted_page();
 	//my_page.get_record_list();
-	//my_page.write_page_on_disk();
-
-	std::vector<unsigned char> res = record1.to_byte_vector();
-	for (int i = 0; i < res.size(); i++)
-	{
-		std::cout << res[i];
-	}
-	std::cout<< std::endl;
+	my_page.write_page_on_disk();
 	return 0;
 }

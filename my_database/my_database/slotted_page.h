@@ -29,7 +29,7 @@ private:
 	std::vector<Record> record_arr;
 
 public:
-	SlottedPage();
+	SlottedPage(int page_idx);
 	Record* get_record_list();
 	void print_slotted_page();
 	int write_page_on_disk();

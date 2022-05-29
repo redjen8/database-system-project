@@ -5,11 +5,11 @@
 #include <iostream>
 #include <bitset>
 
-SlottedPage::SlottedPage()
+SlottedPage::SlottedPage(int page_idx)
 {
 	meta_data.page_size = PAGE_SIZE;
 	meta_data.entry_size = 0;
-	meta_data.free_space_end_addr = PAGE_SIZE;
+	meta_data.free_space_end_addr = PAGE_SIZE * (page_idx+1);
 }
 
 Record* SlottedPage::get_record_list()
@@ -65,13 +65,13 @@ int SlottedPage::write_page_on_disk()
 	for (int i = 0; i < meta_data.entry_size; i++)
 	{
 		if (record_ptr_arr[i].is_deleted) continue;
-		std::string write_buffer = record_arr[i].to_string();
+		std::vector<unsigned char> byte_arr = record_arr[i].to_byte_vector();
 		int buffer_offset = record_ptr_arr[i].offset;
 		int buffer_length = record_ptr_arr[i].length;
 		
 		current_seek -= buffer_length;
 		fout.seekg(current_seek);
-		fout.write(write_buffer.c_str(), write_buffer.length());
+		fout.write((char*) & byte_arr[0], byte_arr.size());
 	}
 	fout.close();
 	return 0;
