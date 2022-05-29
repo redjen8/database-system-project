@@ -27,8 +27,15 @@ int main()
 	SlottedPage my_page = SlottedPage();
 	my_page.add_record(record1);
 	my_page.add_record(record2);
-	my_page.print_slotted_page();
+	//my_page.print_slotted_page();
 	//my_page.get_record_list();
-	my_page.write_page_on_disk();
+	//my_page.write_page_on_disk();
+
+	std::vector<unsigned char> res = record1.to_byte_vector();
+	for (int i = 0; i < res.size(); i++)
+	{
+		std::cout << res[i];
+	}
+	std::cout<< std::endl;
 	return 0;
 }
