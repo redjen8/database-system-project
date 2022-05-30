@@ -33,6 +33,6 @@ public:
 	Record* get_record_list();
 	void print_slotted_page();
 	int write_page_on_disk();
-	int read_from_disk();
+	int read_from_disk(int page_start, int page_end);
 	int add_record(Record tRecord);
 };

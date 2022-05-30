@@ -35,29 +35,25 @@ int SlottedPage::write_page_on_disk()
 	std::fstream fout;
 	fout.open("data.db", std::ios::binary | std::ios::out);
 	// page meta data 파일 쓰기
-	fout.write("{", 1);
-	fout.write(std::to_string(meta_data.entry_size).c_str(), std::to_string(meta_data.entry_size).length());
-	fout.write(",", 1);
-	fout.write(std::to_string(meta_data.free_space_end_addr).c_str(), std::to_string(meta_data.free_space_end_addr).length());
-	fout.write("}", 1);
+	Record* exRecord = new Record();
+	std::vector<unsigned char> entry_size_byte_arr = exRecord->int_to_byte(meta_data.entry_size);
+	fout.write((char*)&entry_size_byte_arr[0], 4);
+	std::vector<unsigned char> free_space_byte_arr = exRecord->int_to_byte(meta_data.free_space_end_addr);
+	fout.write((char*)&free_space_byte_arr[0], 4);
 
-	int record_start_idx = PAGE_SIZE;
+ 	int record_start_idx = PAGE_SIZE;
 	for (int i = 0; i < meta_data.entry_size; i++)
 	{
-		fout.write("(", 1);
-		fout.write(std::to_string(record_ptr_arr[i].offset).c_str(), std::to_string(record_ptr_arr[i].offset).length());
-		fout.write(",", 1);
-		fout.write(std::to_string(record_ptr_arr[i].length).c_str(), std::to_string(record_ptr_arr[i].length).length());
-		fout.write(",", 1);
-		std::string is_deleted;
-		if (record_ptr_arr[i].is_deleted) is_deleted = "1";
-		else is_deleted = "0";
-		fout.write(is_deleted.c_str(), is_deleted.length());
-		fout.write(")", 1); 
+		std::vector<unsigned char> offset_byte_arr = exRecord->int_to_byte(record_ptr_arr[i].offset);
+		std::vector<unsigned char> length_byte_arr = exRecord->int_to_byte(record_ptr_arr[i].length);
+		unsigned char is_deleted_byte;
+		if (record_ptr_arr[i].is_deleted) is_deleted_byte = 1;
+		else is_deleted_byte = 0;
+		fout.write((char*)&offset_byte_arr[0], 4);
+		fout.write((char*)&length_byte_arr[0], 4);
+		fout.write((char*)&is_deleted_byte, 1);
 	}
 
-	//std::string null_bitmap = std::bitset<32>(0x000000E1).to_string();
-	//fout.write(null_bitmap.c_str(), null_bitmap.length());
 	int current_seek = PAGE_SIZE * page_idx;
 	for (int i = 0; i < meta_data.entry_size; i++)
 	{
@@ -86,7 +82,7 @@ int SlottedPage::add_record(Record tRecord)
 	return 0;
 }
 
-int SlottedPage::read_from_disk()
+int SlottedPage::read_from_disk(int page_start, int page_end)
 {
 	
 	return 0;
