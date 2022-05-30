@@ -38,4 +38,5 @@ public:
 	std::string to_string();
 	std::vector<unsigned char> int_to_byte (int x);
 	std::vector<unsigned char> to_byte_vector();
+	int byte_arr_to_int(unsigned char* x);
 };

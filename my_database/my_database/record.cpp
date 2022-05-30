@@ -189,3 +189,11 @@ std::vector<unsigned char> Record::to_byte_vector()
 	}
 	return record_byte_arr;
 }
+
+int Record::byte_arr_to_int(unsigned char* x)
+{
+	int result = 0;
+	for (int i = 0; i < 4; i++)
+		result += x[3 - i] << (i * 8);
+	return result;
+}
