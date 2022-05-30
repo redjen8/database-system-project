@@ -7,7 +7,6 @@
 //페이지 자체 메타 데이터, 페이지 크기, 레코드 개수, free space 마지막 위치, 컬럼 정보
 typedef struct page_meta_data
 {
-	int page_size;
 	int entry_size;
 	int free_space_end_addr;
 	column_info column_meta;
@@ -24,6 +23,7 @@ typedef struct record_meta_data
 class SlottedPage
 {
 private:
+	int page_idx;
 	page_meta_data meta_data;
 	std::vector<record_meta_data> record_ptr_arr;
 	std::vector<Record> record_arr;

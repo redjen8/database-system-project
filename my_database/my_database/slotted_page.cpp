@@ -7,7 +7,6 @@
 
 SlottedPage::SlottedPage(int page_idx)
 {
-	meta_data.page_size = PAGE_SIZE;
 	meta_data.entry_size = 0;
 	meta_data.free_space_end_addr = PAGE_SIZE * (page_idx+1);
 }
@@ -19,7 +18,7 @@ Record* SlottedPage::get_record_list()
 
 void SlottedPage::print_slotted_page()
 {
-	std::cout << "page size : " << meta_data.page_size << std::endl;
+	std::cout << "page size : " << PAGE_SIZE << std::endl;
 	std::cout << "entry size : " << meta_data.entry_size << std::endl;
 	std::cout << "free space end address : " << meta_data.free_space_end_addr << std::endl << std::endl;
 	int cnt = 0;
@@ -37,14 +36,12 @@ int SlottedPage::write_page_on_disk()
 	fout.open("data.db", std::ios::binary | std::ios::out);
 	// page meta data 파일 쓰기
 	fout.write("{", 1);
-	fout.write(std::to_string(meta_data.page_size).c_str(), std::to_string(meta_data.page_size).length());
-	fout.write(",", 1);
 	fout.write(std::to_string(meta_data.entry_size).c_str(), std::to_string(meta_data.entry_size).length());
 	fout.write(",", 1);
 	fout.write(std::to_string(meta_data.free_space_end_addr).c_str(), std::to_string(meta_data.free_space_end_addr).length());
 	fout.write("}", 1);
 
-	int record_start_idx = meta_data.page_size;
+	int record_start_idx = PAGE_SIZE;
 	for (int i = 0; i < meta_data.entry_size; i++)
 	{
 		fout.write("(", 1);
@@ -61,7 +58,7 @@ int SlottedPage::write_page_on_disk()
 
 	//std::string null_bitmap = std::bitset<32>(0x000000E1).to_string();
 	//fout.write(null_bitmap.c_str(), null_bitmap.length());
-	int current_seek = meta_data.page_size;
+	int current_seek = PAGE_SIZE * page_idx;
 	for (int i = 0; i < meta_data.entry_size; i++)
 	{
 		if (record_ptr_arr[i].is_deleted) continue;
@@ -91,5 +88,6 @@ int SlottedPage::add_record(Record tRecord)
 
 int SlottedPage::read_from_disk()
 {
+	
 	return 0;
 }
