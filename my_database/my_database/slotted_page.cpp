@@ -6,6 +6,66 @@
 #include <bitset>
 #include "byte_convert.h"
 
+SlottedPage::SlottedPage(std::string file, column_info column_meta, int page_start, int page_end)
+{
+	if (page_end - page_start != PAGE_SIZE) 
+	{
+		//페이지 사이즈가 지정된 것과 다를 경우 예외처리
+	}
+	page_idx = page_start / PAGE_SIZE;
+	file_name = file;
+
+	std::ifstream fout;
+	fout.open(file_name.c_str(), std::ios::binary | std::ios::in);
+	fout.seekg(page_start);
+	unsigned char read_buffer[PAGE_SIZE];
+	fout.read((char*)read_buffer, PAGE_SIZE);
+	int file_cursor;
+	unsigned char meta_byte_buffer[4];
+	for (file_cursor = 0; file_cursor < 4; file_cursor++)
+	{
+		meta_byte_buffer[file_cursor] = read_buffer[file_cursor];
+	}
+	meta_data.entry_size = byte_arr_to_int(meta_byte_buffer);
+	for (file_cursor = 4; file_cursor < 8; file_cursor++)
+	{
+		meta_byte_buffer[file_cursor - 4] = read_buffer[file_cursor];
+	}
+	meta_data.free_space_end_addr = byte_arr_to_int(meta_byte_buffer);
+	meta_data.column_meta = column_meta;
+
+	for (int entry_num = 0; entry_num < meta_data.entry_size; entry_num++)
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			meta_byte_buffer[i] = read_buffer[file_cursor];
+			file_cursor++;
+		}
+		int offset = byte_arr_to_int(meta_byte_buffer);
+		for (int i = 0; i < 4; i++)
+		{
+			meta_byte_buffer[i] = read_buffer[file_cursor];
+			file_cursor++;
+		}
+		int length = byte_arr_to_int(meta_byte_buffer);
+		bool isDeleted = read_buffer[file_cursor];
+		file_cursor++;
+		record_ptr_arr.push_back(record_meta_data{offset, length, isDeleted });
+	}
+
+	for (int entry_num = 0; entry_num < meta_data.entry_size; entry_num++)
+	{
+		unsigned char* record_byte_arr = new unsigned char[record_ptr_arr[entry_num].length];
+		for (int i = record_ptr_arr[entry_num].offset; i < record_ptr_arr[entry_num].offset + record_ptr_arr[entry_num].length; i++)
+		{
+			record_byte_arr[i - record_ptr_arr[entry_num].offset] = read_buffer[i];
+		}
+		Record record_from_buffer = Record(record_byte_arr, record_ptr_arr[entry_num].length, meta_data.column_meta);
+		record_arr.push_back(record_from_buffer);
+	}
+	fout.close();
+}
+
 SlottedPage::SlottedPage(std::string file, int page_num)
 {
 	page_idx = page_num;
@@ -28,6 +88,7 @@ void SlottedPage::print_slotted_page()
 	for (int i = 0 ; i != record_arr.size(); i++)
 	{
 		std::cout << "record " << cnt << " :: size = " << record_arr[i].get_record_size() << std::endl;
+		std::cout << "location starts : " << record_ptr_arr[i].offset << " with length : " << record_ptr_arr[i].length << std::endl;
 		record_arr[i].print_record();
 		cnt++;
 	}
@@ -69,9 +130,9 @@ int SlottedPage::write_page_on_disk()
 		std::vector<unsigned char> byte_arr = record_arr[i].to_byte_vector();
 		int buffer_offset = record_ptr_arr[i].offset;
 		int buffer_length = record_ptr_arr[i].length;
-		
 		current_seek -= buffer_length;
 		fout.seekp(current_seek);
+
 		fout.write((char*) & byte_arr[0], byte_arr.size());
 	}
 	fout.close();
@@ -80,64 +141,12 @@ int SlottedPage::write_page_on_disk()
 
 int SlottedPage::add_record(Record tRecord)
 {
-	int new_record_offset = meta_data.free_space_end_addr;
 	int new_record_length = tRecord.get_record_size();
+	meta_data.free_space_end_addr -= new_record_length;
+	int new_record_offset = meta_data.free_space_end_addr;
 	bool new_record_isDeleted = false;
 	record_arr.push_back(tRecord);
-	record_ptr_arr.push_back(record_meta_data{new_record_offset, new_record_length, new_record_isDeleted});
-	meta_data.free_space_end_addr -= new_record_length;
+	record_ptr_arr.push_back(record_meta_data{ new_record_offset, new_record_length, new_record_isDeleted });
 	meta_data.entry_size++;
-	return 0;
-}
-
-int SlottedPage::read_from_disk(int page_start, int page_end)
-{
-	if (page_end - page_start != PAGE_SIZE) return 1; //페이지 사이즈가 지정된 것과 다를 경우 1 반환
-	std::ifstream fout;
-	fout.open(file_name.c_str(), std::ios::binary | std::ios::in);
-	fout.seekg(page_start);
-	unsigned char read_buffer[PAGE_SIZE];
-	fout.read((char*)read_buffer, PAGE_SIZE);
-	int file_cursor;
-	unsigned char meta_byte_buffer[4];
-	for (file_cursor = 0; file_cursor < 4; file_cursor++)
-	{
-		meta_byte_buffer[file_cursor] = read_buffer[file_cursor];
-	}
-	meta_data.entry_size = byte_arr_to_int(meta_byte_buffer);
-	for (file_cursor = 4; file_cursor < 8; file_cursor++)
-	{
-		meta_byte_buffer[file_cursor - 4] = read_buffer[file_cursor];
-	}
-	meta_data.free_space_end_addr = byte_arr_to_int(meta_byte_buffer);
-	for (int entry_num = 0; entry_num < meta_data.entry_size; entry_num++)
-	{
-		for (int i = 0; i < 4; i++)
-		{
-			meta_byte_buffer[i] = read_buffer[file_cursor];
-			file_cursor++;
-		}
-		int offset = byte_arr_to_int(meta_byte_buffer);
-		for (int i = 0; i < 4; i++)
-		{
-			meta_byte_buffer[i] = read_buffer[file_cursor];
-			file_cursor++;
-		}
-		int length = byte_arr_to_int(meta_byte_buffer);
-		bool isDeleted = read_buffer[file_cursor];
-		file_cursor++;
-		record_ptr_arr.push_back(record_meta_data{ offset, length, isDeleted });
-	}
-
-	for (int entry_num = 0; entry_num < meta_data.entry_size; entry_num++)
-	{
-		unsigned char* record_byte_arr = new unsigned char[record_ptr_arr[entry_num].length];
-		for (int i = record_ptr_arr[entry_num].offset; i < record_ptr_arr[entry_num].offset + record_ptr_arr[entry_num].length; i++)
-		{
-			record_byte_arr[i - record_ptr_arr[entry_num].offset] = read_buffer[i];
-		}
-		record_arr.push_back(Record(record_byte_arr, record_ptr_arr[entry_num].length, meta_data.column_meta));
-	}
-	fout.close();
 	return 0;
 }

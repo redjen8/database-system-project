@@ -27,12 +27,24 @@ Record::Record(unsigned char* byte_arr, int arr_length, column_info column_meta)
 		byte_cursor++;
 	}
 	null_bitmap = byte_arr_to_int(null_bitmap_byte);
-	//고정 길이 칼럼 추출
-	for (int i = 0; i < column_meta.fixed_column_length.size(); i++)
+	
+	std::vector<bool> is_column_null_arr;
+	int epbit = 0x00000001;
+	for (int i = 0; i < column_length; i++)
 	{
-		int byte_cnt = column_meta.fixed_column_length[i];
+		if (epbit & null_bitmap) is_column_null_arr.push_back(true);
+		else is_column_null_arr.push_back(false);
+		epbit *= 2;
+	}
+
+	int column_number = 0;
+	//고정 길이 칼럼 추출
+	for (; column_number < column_meta.fixed_column_length.size(); column_number++)
+	{
+		if (is_column_null_arr[column_number]) continue;
+		int byte_cnt = column_meta.fixed_column_length[column_number];
 		unsigned char* fixed_column_byte = new unsigned char[byte_cnt+1];
-		for (int j = 0; j < column_meta.fixed_column_length[i]; j++)
+		for (int j = 0; j < column_meta.fixed_column_length[column_number]; j++)
 		{
 			fixed_column_byte[j] = byte_arr[byte_cursor];
 			byte_cursor++;
@@ -41,10 +53,15 @@ Record::Record(unsigned char* byte_arr, int arr_length, column_info column_meta)
 		std::string fixed_len_column_string = static_cast<std::string>(reinterpret_cast<const char*>(fixed_column_byte));
 		fixed_len_column.push_back(make_pair(fixed_len_column_string, fixed_len_column_string.length()));
 	}
+
 	//가변 길이 컬럼 추출
-	int current_var_column_length = 0;
-	while (current_var_column_length < column_length - column_meta.fixed_column_length.size())
+	while (column_number < column_length)
 	{
+		if (is_column_null_arr[column_number])
+		{
+			column_number++;
+			continue;
+		}
 		unsigned char* var_column_offset = new unsigned char[4];
 		for (int i = 0; i < 4; i++)
 		{
@@ -67,7 +84,7 @@ Record::Record(unsigned char* byte_arr, int arr_length, column_info column_meta)
 		}
 		column_string[length] = '\0';
 		var_len_column.push_back(static_cast<std::string>(reinterpret_cast<const char*>(column_string)));
-		current_var_column_length++;
+		column_number++;
 	}
 	byte_arr_size = get_record_size();
 }

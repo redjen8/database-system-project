@@ -29,10 +29,10 @@ private:
 	std::vector<record_meta_data> record_ptr_arr;
 	std::vector<Record> record_arr;
 public:
+	SlottedPage(std::string file_name, column_info column_meta, int page_start, int page_end);
 	SlottedPage(std::string file_name, int page_idx);
 	Record* get_record_list();
 	void print_slotted_page();
 	int write_page_on_disk();
-	int read_from_disk(int page_start, int page_end);
 	int add_record(Record tRecord);
 };
