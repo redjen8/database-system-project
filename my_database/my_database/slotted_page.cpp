@@ -66,12 +66,13 @@ SlottedPage::SlottedPage(std::string file, column_info column_meta, int page_sta
 	fout.close();
 }
 
-SlottedPage::SlottedPage(std::string file, int page_num)
+SlottedPage::SlottedPage(std::string file, column_info column_meta_info, int page_num)
 {
 	page_idx = page_num;
 	file_name = file;
 	meta_data.entry_size = 0;
 	meta_data.free_space_end_addr = PAGE_SIZE * (page_idx + 1);
+	meta_data.column_meta = column_meta_info;
 }
 
 Record* SlottedPage::get_record_list()
@@ -96,9 +97,10 @@ void SlottedPage::print_slotted_page()
 
 int SlottedPage::write_page_on_disk()
 {
-	std::ofstream fout;
-	fout.open(file_name.c_str(), std::ios::binary | std::ios::out);
+	std::fstream fout;
+	fout.open(file_name.c_str(), std::ios::binary | std::ios::out | std::ios::in);
 	unsigned char null_byte = NULL;
+	fout.seekp(page_idx * PAGE_SIZE);
 	for (int i = 0; i < PAGE_SIZE; i++)
 	{
 		fout.write((char*)&null_byte, 1);
@@ -110,7 +112,6 @@ int SlottedPage::write_page_on_disk()
 	std::vector<unsigned char> free_space_byte_arr = int_to_byte(meta_data.free_space_end_addr);
 	fout.write((char*)&free_space_byte_arr[0], 4);
 
- 	int record_start_idx = PAGE_SIZE;
 	for (int i = 0; i < meta_data.entry_size; i++)
 	{
 		std::vector<unsigned char> offset_byte_arr = int_to_byte(record_ptr_arr[i].offset);
