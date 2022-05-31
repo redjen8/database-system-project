@@ -136,7 +136,7 @@ int SlottedPage::read_from_disk(int page_start, int page_end)
 		{
 			record_byte_arr[i - record_ptr_arr[entry_num].offset] = read_buffer[i];
 		}
-		record_arr.push_back(Record(record_byte_arr, record_ptr_arr[entry_num].length));
+		record_arr.push_back(Record(record_byte_arr, record_ptr_arr[entry_num].length, meta_data.column_meta));
 	}
 	fout.close();
 	return 0;

@@ -27,9 +27,13 @@ int main()
 	SlottedPage my_page = SlottedPage("data.db", 0);
 	my_page.add_record(record1);
 	my_page.add_record(record2);
-	my_page.print_slotted_page();
+	//my_page.print_slotted_page();
 	//my_page.get_record_list();
 	my_page.write_page_on_disk();
-	my_page.read_from_disk(0, 4096);
+	//my_page.read_from_disk(0, 4096);
+
+	std::vector<unsigned char> record1_byte_arr = record1.to_byte_vector();
+	Record record3 = Record(&record1_byte_arr[0], record1_byte_arr.size(), column_meta);
+	record3.print_record();
 	return 0;
 }

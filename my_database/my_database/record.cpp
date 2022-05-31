@@ -30,12 +30,14 @@ Record::Record(unsigned char* byte_arr, int arr_length, column_info column_meta)
 	//고정 길이 칼럼 추출
 	for (int i = 0; i < column_meta.fixed_column_length.size(); i++)
 	{
-		unsigned char* fixed_column_byte = new unsigned char[column_meta.fixed_column_length[i]];
+		int byte_cnt = column_meta.fixed_column_length[i];
+		unsigned char* fixed_column_byte = new unsigned char[byte_cnt+1];
 		for (int j = 0; j < column_meta.fixed_column_length[i]; j++)
 		{
 			fixed_column_byte[j] = byte_arr[byte_cursor];
 			byte_cursor++;
 		}
+		fixed_column_byte[byte_cnt] = '\0';
 		std::string fixed_len_column_string = static_cast<std::string>(reinterpret_cast<const char*>(fixed_column_byte));
 		fixed_len_column.push_back(make_pair(fixed_len_column_string, fixed_len_column_string.length()));
 	}
@@ -58,11 +60,12 @@ Record::Record(unsigned char* byte_arr, int arr_length, column_info column_meta)
 		}
 		int length = byte_arr_to_int(var_column_length);
 		var_len_column_loc.push_back(location_meta_data{offset, length});
-		unsigned char* column_string = new unsigned char[length];
+		unsigned char* column_string = new unsigned char[length+1];
 		for (int i = 0; i < length; i++)
 		{
 			column_string[i] = byte_arr[offset + i];
 		}
+		column_string[length] = '\0';
 		var_len_column.push_back(static_cast<std::string>(reinterpret_cast<const char*>(column_string)));
 		current_var_column_length++;
 	}
@@ -73,7 +76,7 @@ Record::Record(std::vector<std::string> input, column_info column_meta) {
 	int null_bitmap_mask = 0x00000000;
 	int epbit = 1;
 	int fixed_column_cnt = 0;
-	int var_column_start_location = 8; // null bitmap 이후부터 시작
+	int var_column_start_location = 4; // null bitmap 이후부터 시작
 	for (int i = 0; i < column_meta.column_type.size(); i++)
 	{
 		if (input[i].compare("") == 0 || input[i].length() == 0)
@@ -91,6 +94,7 @@ Record::Record(std::vector<std::string> input, column_info column_meta) {
 		{
 			fixed_len_column.push_back(make_pair(input[i], column_meta.fixed_column_length[fixed_column_cnt]));
 			var_column_start_location += column_meta.fixed_column_length[fixed_column_cnt];
+			fixed_column_cnt++;
 		}
 		null_bitmap_mask += epbit;
 		epbit *= 2;
