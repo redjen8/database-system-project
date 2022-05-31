@@ -29,6 +29,7 @@ private:
 	int byte_arr_size;
 public:
 	Record();
+	Record(unsigned char* byte_arr);
 	Record(std::vector<std::string> input, column_info column_meta);
 	int get_record_size();
 	void print_record();
@@ -36,7 +37,5 @@ public:
 	std::vector<std::string> get_fixed_column_list();
 	std::vector<std::string> get_var_column_list();
 	std::string to_string();
-	std::vector<unsigned char> int_to_byte (int x);
 	std::vector<unsigned char> to_byte_vector();
-	int byte_arr_to_int(unsigned char* x);
 };
