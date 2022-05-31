@@ -6,10 +6,67 @@
 #include <bitset>
 #include "record.h"
 #include "byte_convert.h"
+#include "column_info.h"
 
-Record::Record()
+Record::Record(unsigned char* byte_arr, int arr_length, column_info column_meta)
 {
+	null_bitmap = 0x00000000;
+	fixed_len_column.clear();
+	var_len_column.clear();
+	var_len_column_loc.clear();
+	record_byte_arr.clear();
+	byte_arr_size = 0;
 
+	int byte_cursor = 0;
+	unsigned int column_length = column_meta.column_type.size();
+	// null bitmap 추출
+	unsigned char* null_bitmap_byte = new unsigned char[4];
+	for (int i = 0; i < 4; i++)
+	{
+		null_bitmap_byte[i] = byte_arr[byte_cursor];
+		byte_cursor++;
+	}
+	null_bitmap = byte_arr_to_int(null_bitmap_byte);
+	//고정 길이 칼럼 추출
+	for (int i = 0; i < column_meta.fixed_column_length.size(); i++)
+	{
+		unsigned char* fixed_column_byte = new unsigned char[column_meta.fixed_column_length[i]];
+		for (int j = 0; j < column_meta.fixed_column_length[i]; j++)
+		{
+			fixed_column_byte[j] = byte_arr[byte_cursor];
+			byte_cursor++;
+		}
+		std::string fixed_len_column_string = static_cast<std::string>(reinterpret_cast<const char*>(fixed_column_byte));
+		fixed_len_column.push_back(make_pair(fixed_len_column_string, fixed_len_column_string.length()));
+	}
+	//가변 길이 컬럼 추출
+	int current_var_column_length = 0;
+	while (current_var_column_length < column_length - column_meta.fixed_column_length.size())
+	{
+		unsigned char* var_column_offset = new unsigned char[4];
+		for (int i = 0; i < 4; i++)
+		{
+			var_column_offset[i] = byte_arr[byte_cursor];
+			byte_cursor++;
+		}
+		int offset = byte_arr_to_int(var_column_offset);
+		unsigned char* var_column_length = new unsigned char[4];
+		for (int i = 0; i < 4; i++)
+		{
+			var_column_length[i] = byte_arr[byte_cursor];
+			byte_cursor++;
+		}
+		int length = byte_arr_to_int(var_column_length);
+		var_len_column_loc.push_back(location_meta_data{offset, length});
+		unsigned char* column_string = new unsigned char[length];
+		for (int i = 0; i < length; i++)
+		{
+			column_string[i] = byte_arr[offset + i];
+		}
+		var_len_column.push_back(static_cast<std::string>(reinterpret_cast<const char*>(column_string)));
+		current_var_column_length++;
+	}
+	byte_arr_size = get_record_size();
 }
 
 Record::Record(std::vector<std::string> input, column_info column_meta) {

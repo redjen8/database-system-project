@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <string>
+#include "column_info.h"
 
 #define MAX_COLUMN_LEN 50
 
@@ -10,13 +11,6 @@ typedef struct location_meta_data
 	int length;
 }location_meta_data;
 
-// 컬럼 이름 목록 column_name, column_type이 true이면 가변 길이 컬럼, false면 고정 길이 칼럼
-typedef struct column_info
-{
-	std::vector<std::string> column_name;
-	std::vector<bool> column_type;
-	std::vector<int> fixed_column_length;
-}column_info;
 
 class Record
 {
@@ -28,8 +22,7 @@ private:
 	std::vector<unsigned char> record_byte_arr;
 	int byte_arr_size;
 public:
-	Record();
-	Record(unsigned char* byte_arr);
+	Record(unsigned char* byte_arr, int arr_length, column_info column_meta);
 	Record(std::vector<std::string> input, column_info column_meta);
 	int get_record_size();
 	void print_record();

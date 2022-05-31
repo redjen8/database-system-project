@@ -147,6 +147,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="byte_convert.h" />
+    <ClInclude Include="column_info.h" />
     <ClInclude Include="record.h" />
     <ClInclude Include="slotted_page.h" />
   </ItemGroup>

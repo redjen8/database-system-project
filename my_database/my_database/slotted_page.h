@@ -28,7 +28,6 @@ private:
 	page_meta_data meta_data;
 	std::vector<record_meta_data> record_ptr_arr;
 	std::vector<Record> record_arr;
-
 public:
 	SlottedPage(std::string file_name, int page_idx);
 	Record* get_record_list();
