@@ -140,11 +140,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="byte_convert.cpp" />
     <ClCompile Include="record.cpp" />
     <ClCompile Include="slotted_page.cpp" />
     <ClCompile Include="test_record.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="byte_convert.h" />
     <ClInclude Include="record.h" />
     <ClInclude Include="slotted_page.h" />
   </ItemGroup>

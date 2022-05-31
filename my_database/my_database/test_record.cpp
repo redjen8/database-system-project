@@ -24,11 +24,12 @@ int main()
 	input2.push_back("Mathmatics");
 	Record record2 = Record(input2, column_meta);
 
-	SlottedPage my_page = SlottedPage(0);
+	SlottedPage my_page = SlottedPage("data.db", 0);
 	my_page.add_record(record1);
 	my_page.add_record(record2);
 	my_page.print_slotted_page();
 	//my_page.get_record_list();
 	my_page.write_page_on_disk();
+	my_page.read_from_disk(0, 4096);
 	return 0;
 }
