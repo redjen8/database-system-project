@@ -3,53 +3,76 @@
 #include <iostream>
 #include <fstream>
 #include "jsoncpp/json/json.h"
-#include "jsoncpp/json/json-forwards.h"
 
 int main()
 {
-	Json::Value table1;
-	table1["table_name"] = "student";
-	table1["table_column_list"].append("student_id");
-	table1["table_column_list"].append("grade");
-	table1["table_column_list"].append("name");
-	table1["table_column_list"].append("major");
-	table1["variable_column_cnt"] = 2;
-	table1["fixed_column_cnt"] = 2;
+	const char* meta_data_file_name = "meta_data.json";
 
-	Json::Value file1;
-	file1["file_name"] = "data.db";
-	file1["start_loc"] = 4096;
-	file1["end_loc"] = 49152;
-	table1["block_location"].append(file1);
+	{
+		Json::Value table1;
+		table1["table_name"] = "student";
+		table1["table_column_list"].append("student_id");
+		table1["table_column_list"].append("grade");
+		table1["table_column_list"].append("name");
+		table1["table_column_list"].append("major");
+		table1["variable_column_cnt"] = 2;
+		table1["fixed_column_cnt"] = 2;
 
-	Json::Value file2;
-	file2["file_name"] = "data.db";
-	file2["start_loc"] = 0;
-	file2["end_loc"] = 4096;
-	table1["block_location"].append(file2);
+		Json::Value file1;
+		file1["file_name"] = "data.db";
+		file1["start_loc"] = 4096;
+		file1["end_loc"] = 49152;
+		table1["block_location"].append(file1);
 
-	table1["next_insert_location"]["file_name"] = "data.db";
-	table1["next_insert_location"]["start_loc"] = 0;
-	table1["next_insert_location"]["end_loc"] = 4096;
+		Json::Value file2;
+		file2["file_name"] = "data.db";
+		file2["start_loc"] = 0;
+		file2["end_loc"] = 4096;
+		table1["block_location"].append(file2);
 
-	Json::Value table_meta_data;
-	table_meta_data["table_meta_data"].append(table1);
+		table1["next_insert_location"]["file_name"] = "data.db";
+		table1["next_insert_location"]["start_loc"] = 0;
+		table1["next_insert_location"]["end_loc"] = 4096;
 
-	table_meta_data["FILE_MAX_BLOCK_NUM"] = 1024;
-	table_meta_data["NEXT_BLOCK_LOC"]["file_name"] = "data.db";
-	table_meta_data["NEXT_BLOCK_LOC"]["loc"] = 0;
+		Json::Value table_meta_data;
+		table_meta_data["table_meta_data"].append(table1);
 
-	auto str = table_meta_data.toStyledString();
-	std::cout << str;
-	Json::StreamWriterBuilder builder;
-	builder["commentStyle"] = "None";
-	builder["indentation"] = "   ";
+		table_meta_data["FILE_MAX_BLOCK_NUM"] = 1024;
+		table_meta_data["NEXT_BLOCK_LOC"]["file_name"] = "data.db";
+		table_meta_data["NEXT_BLOCK_LOC"]["loc"] = 0;
 
-	std::unique_ptr<Json::StreamWriter> writer(builder.newStreamWriter());
-	std::ofstream outputFileStream("meta_data.json");
-	writer->write(table_meta_data, &outputFileStream);
+		Json::StreamWriterBuilder builder;
+		builder["commentStyle"] = "None";
+		builder["indentation"] = "    ";
+
+		std::unique_ptr<Json::StreamWriter> writer(builder.newStreamWriter());
+		std::ofstream outputFileStream("meta_data.json");
+		writer->write(table_meta_data, &outputFileStream);
+	}
+	{
+		std::fstream json_file;
+		json_file.open("meta_data.json", std::ios::binary | std::ios::in | std::ios::out);
+		std::string str;
+		if (json_file.is_open())
+		{
+			while (!json_file.eof())
+			{
+				std::string tmp;
+				std::getline(json_file, tmp);
+				str.append(tmp);
+			}
+		}
+		json_file.close();
+		Json::Reader reader;
+		Json::Value value;
+		if (!reader.parse(str, value))
+		{
+			std::cerr << "Failed to parse json : " << reader.getFormattedErrorMessages() << std::endl;
+		}
+		std::cout << value << std::endl;
+	}
 	return 0;
-}
+q}
 
 int main2()
 {
