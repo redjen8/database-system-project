@@ -4,10 +4,9 @@
 #include <fstream>
 #include "jsoncpp/json/json.h"
 
-int main()
+int json_test()
 {
 	const char* meta_data_file_name = "meta_data.json";
-
 	{
 		Json::Value table1;
 		table1["table_name"] = "student";
@@ -74,7 +73,7 @@ int main()
 	return 0;
 }
 
-int main2()
+int record_page_test()
 {
 	std::vector<std::string> column_name = { "student_id", "grade", "name", "major" };
 	std::vector<bool> column_type = { false, false, true, true };

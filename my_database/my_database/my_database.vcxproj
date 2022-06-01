@@ -142,11 +142,12 @@
   <ItemGroup>
     <ClCompile Include="byte_convert.cpp" />
     <ClCompile Include="jsoncpp\jsoncpp.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="record.cpp" />
     <ClCompile Include="slotted_page.cpp" />
     <ClCompile Include="system_module.cpp" />
     <ClCompile Include="table.cpp" />
-    <ClCompile Include="test_record.cpp" />
+    <ClCompile Include="system_test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="byte_convert.h" />
