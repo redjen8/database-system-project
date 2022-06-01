@@ -6,12 +6,14 @@ using namespace std;
 
 void show_menu()
 {
-	cout << endl << "Please Select Operation." << endl;
+	cout << "------------------------------" << endl;
+	cout << "Please Select Operation." << endl;
 	cout << "(1) Insert new table" << endl;
 	cout << "(2) Insert a record into table" << endl;
 	cout << "(3) Select every data in table" << endl;
 	cout << "(4) Select a record by its primary key" << endl;
 	cout << "(5) Select column list of a table" << endl;
+	cout << "------------------------------" << endl;
 }
 
 int main()
@@ -77,7 +79,11 @@ int main()
 			case 2:
 			{
 				// 레코드를 테이블에 삽입
-				system_module.insert_new_record();
+				cout << "Please input table name to insert record : ";
+				string table_name_input;
+				cin >> table_name_input;
+				int idx = system_module.table_name_index_map[table_name_input];
+				system_module.insert_new_record(idx);
 				break;
 			}
 			case 3:

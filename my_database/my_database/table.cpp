@@ -92,3 +92,8 @@ table_meta_data Table::get_table_meta()
 {
 	return table_meta;
 }
+
+column_info Table::get_column_meta()
+{
+	return column_meta;
+}

@@ -26,4 +26,5 @@ public:
 	Record search_by_id(std::string search_key);
 	std::vector<Record> get_record_list();
 	table_meta_data get_table_meta();
+	column_info get_column_meta();
 };
