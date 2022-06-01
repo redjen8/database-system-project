@@ -38,9 +38,6 @@ int main()
 	//my_page.get_record_list();
 	my_page.write_page_on_disk();
 
-	SlottedPage test = SlottedPage("data.db", column_meta, 0, 4096);
-	test.print_slotted_page();
-
 	column_name = { "student_id", "grade", "name", "major", "gender" };
 	column_type = { false, false, true, true, false };
 	fixed_column_length = { 5, 1, 1 };
@@ -66,10 +63,14 @@ int main()
 	my_page2.add_record(record3);
 	my_page2.add_record(record4);
 
+	SlottedPage test = SlottedPage("data.db", column_meta, 0, 4096);
+	test.print_slotted_page();
 	my_page2.write_page_on_disk();
-
 
 	SlottedPage test2 = SlottedPage("data.db", column_meta2, 4096, 8192);
 	test2.print_slotted_page();
+
+	test = SlottedPage("data.db", column_meta, 0, 4096);
+	test.print_slotted_page();
 	return 0;
 }

@@ -4,6 +4,7 @@
 #include <vector>
 #include <iostream>
 #include <bitset>
+#include <format>
 #include "byte_convert.h"
 
 SlottedPage::SlottedPage(std::string file, column_info column_meta, int page_start, int page_end)
@@ -16,7 +17,7 @@ SlottedPage::SlottedPage(std::string file, column_info column_meta, int page_sta
 	file_name = file;
 
 	std::ifstream fout;
-	fout.open(file_name.c_str(), std::ios::binary | std::ios::in);
+	fout.open(file_name.c_str(), std::ios::binary | std::ios::in | std::ios::out);
 	fout.seekg(page_start);
 	unsigned char read_buffer[PAGE_SIZE];
 	fout.read((char*)read_buffer, PAGE_SIZE);
@@ -56,11 +57,14 @@ SlottedPage::SlottedPage(std::string file, column_info column_meta, int page_sta
 	for (int entry_num = 0; entry_num < meta_data.entry_size; entry_num++)
 	{
 		unsigned char* record_byte_arr = new unsigned char[record_ptr_arr[entry_num].length];
-		for (int i = record_ptr_arr[entry_num].offset; i < record_ptr_arr[entry_num].offset + record_ptr_arr[entry_num].length; i++)
+		int offset = record_ptr_arr[entry_num].offset - page_idx * PAGE_SIZE;
+		int length = record_ptr_arr[entry_num].length;
+		std::cout << "read starts from : " << offset << " to : " << offset + length << std::endl;
+		for (int i = offset; i < offset + length; i++)
 		{
-			record_byte_arr[i - record_ptr_arr[entry_num].offset] = read_buffer[i];
+			record_byte_arr[i - offset] = read_buffer[i];
 		}
-		Record record_from_buffer = Record(record_byte_arr, record_ptr_arr[entry_num].length, meta_data.column_meta);
+		Record record_from_buffer = Record(record_byte_arr, length, meta_data.column_meta);
 		record_arr.push_back(record_from_buffer);
 	}
 	fout.close();
