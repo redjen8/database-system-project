@@ -31,7 +31,7 @@ private:
 public:
 	SlottedPage(std::string file_name, column_info column_meta, int page_start, int page_end);
 	SlottedPage(std::string file_name, column_info column_meta_info, int page_idx);
-	Record* get_record_list();
+	std::vector<Record> get_record_list();
 	void print_slotted_page();
 	int write_page_on_disk();
 	int add_record(Record tRecord);

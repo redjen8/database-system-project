@@ -8,6 +8,11 @@
 #include "byte_convert.h"
 #include "column_info.h"
 
+Record::Record()
+{
+	null_bitmap = 0xFFFFFFFF;
+}
+
 Record::Record(unsigned char* byte_arr, int arr_length, column_info column_meta)
 {
 	null_bitmap = 0x00000000;

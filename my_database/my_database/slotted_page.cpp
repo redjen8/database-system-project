@@ -79,9 +79,9 @@ SlottedPage::SlottedPage(std::string file, column_info column_meta_info, int pag
 	meta_data.column_meta = column_meta_info;
 }
 
-Record* SlottedPage::get_record_list()
+std::vector<Record> SlottedPage::get_record_list()
 {
-	return NULL;
+	return record_arr;
 }
 
 void SlottedPage::print_slotted_page()

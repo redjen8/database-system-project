@@ -22,6 +22,7 @@ private:
 	std::vector<unsigned char> record_byte_arr;
 	int byte_arr_size;
 public:
+	Record();
 	Record(unsigned char* byte_arr, int arr_length, column_info column_meta);
 	Record(std::vector<std::string> input, column_info column_meta);
 	int get_record_size();
