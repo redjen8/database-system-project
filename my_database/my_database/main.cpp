@@ -106,7 +106,11 @@ int main()
 			case 5:
 			{
 				// 테이블의 컬럼 목록 출력
-				//system_module.get_table_column_list();
+				cout << "Please input table name to search column list : ";
+				string table_name_input;
+				cin >> table_name_input;
+				int idx = system_module.table_name_index_map[table_name_input];
+				system_module.get_table_column_list(idx);
 				break;
 			}
 			default:

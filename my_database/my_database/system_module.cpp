@@ -120,6 +120,12 @@ int SystemModule::search_by_pk(int table_idx, std::string key)
 
 int SystemModule::get_table_column_list(int table_idx)
 {
+	Table target_table = table_list[table_idx];
+	std::vector<std::string> column_name_list = target_table.get_table_meta().table_column_list;
+	for (int i = 0; i < column_name_list.size(); i++)
+	{
+		std::cout << "column " << std::to_string(i) << " : " << column_name_list[i] << std::endl;
+	}
 	return 0;
 }
 
