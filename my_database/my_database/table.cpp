@@ -1,11 +1,30 @@
 #include "table.h"
 #include "slotted_page.h"
-#include "column_info.h"
+#include "meta_data.h"
 #include "record.h"
 
-Table::Table(column_info column)
+Table::Table(table_meta_data table)
 {
-	column_meta = column;
+	table_meta = table;
+	column_meta.column_name = table_meta.table_column_list;
+	int column_length = table_meta.variable_column_cnt + table_meta.fixed_column_cnt;
+	std::vector<bool> column_type(column_length, true);
+	for (int i = 0; i < table_meta.fixed_column_cnt; i++)
+	{
+		column_type[i] = false;
+	}
+	column_meta.column_type = column_type;
+	column_meta.fixed_column_length = table_meta.fixed_column_length;
+	column_meta.primary_key_index = table_meta.pk_column_idx;
+	
+	for (int i = 0; i < table_meta.block_location.size(); i++)
+	{
+		std::string file_name = table_meta.block_location[i].file_name;
+		int start = table_meta.block_location[i].start_loc;
+		int end = table_meta.block_location[i].end_loc;
+		record_loc_list.push_back(record_store_loc{ file_name, start, end });
+	}
+	
 }
 
 Table::Table(column_info column, std::vector<record_store_loc> record_ptr_list)
@@ -62,4 +81,14 @@ Record Table::search_by_id(std::string search_key)
 	}
 	Record not_found = Record();
 	return not_found;
+}
+
+std::vector<Record> Table::get_record_list()
+{
+	return record_list;
+}
+
+table_meta_data Table::get_table_meta()
+{
+	return table_meta;
 }

@@ -1,5 +1,5 @@
 #include "system_module.h"
-#include "column_info.h"
+#include "meta_data.h"
 #include <iostream>
 
 using namespace std;
@@ -28,6 +28,10 @@ int main()
 			case 1:
 			{
 				// 테이블 삽입
+				cout << "Please input new table name." << endl;
+				string table_name;
+				cin >> table_name;
+
 				cout << "How many fixed length columns will be in the new table?" << endl;
 				int fixed_column_length = 0;
 				cin >> fixed_column_length;
@@ -59,9 +63,14 @@ int main()
 					column_name_arr.push_back(column_name);
 					column_type_arr.push_back(true);
 				}
+				
+				cout << "Which index would be the primary column for the search?" << endl;
+				int pk_index;
+				cin >> pk_index;
 
-				column_info new_table_column = column_info{column_name_arr, column_type_arr, fixed_column_length_arr};
-				Table new_table = Table(new_table_column);
+				std::vector<block_store_loc> block_location;
+				table_meta_data tmd = table_meta_data{ table_name, block_location, column_name_arr, fixed_column_length_arr, variable_column_length, fixed_column_length, pk_index };
+				Table new_table = Table(tmd);
 				system_module.insert_new_table(new_table);
 				break;
 			}
@@ -74,19 +83,23 @@ int main()
 			case 3:
 			{
 				// 테이블의 모든 데이터 출력
-				system_module.get_table_every_data();
+				cout << "Please input table name to search every data : ";
+				string table_name_input;
+				cin >> table_name_input;
+				int idx = system_module.table_name_index_map[table_name_input];
+				system_module.get_table_every_data(idx);
 				break;
 			}
 			case 4:
 			{
 				// 테이블의 PK 값으로 레코드 검색
-				system_module.search_by_pk();
+				//system_module.search_by_pk();
 				break;
 			}
 			case 5:
 			{
 				// 테이블의 컬럼 목록 출력
-				system_module.get_table_column_list();
+				//system_module.get_table_column_list();
 				break;
 			}
 			default:

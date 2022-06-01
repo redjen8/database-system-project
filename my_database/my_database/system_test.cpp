@@ -73,7 +73,7 @@ int json_test()
 	return 0;
 }
 
-int record_page_test()
+int test_record()
 {
 	std::vector<std::string> column_name = { "student_id", "grade", "name", "major" };
 	std::vector<bool> column_type = { false, false, true, true };

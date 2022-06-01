@@ -1,6 +1,7 @@
 #pragma once
 #include "record.h"
 #include <vector>
+#include "meta_data.h"
 
 #define PAGE_SIZE 4096
 

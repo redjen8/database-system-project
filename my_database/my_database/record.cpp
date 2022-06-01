@@ -6,7 +6,7 @@
 #include <bitset>
 #include "record.h"
 #include "byte_convert.h"
-#include "column_info.h"
+#include "meta_data.h"
 
 Record::Record()
 {
