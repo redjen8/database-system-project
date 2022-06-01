@@ -155,3 +155,10 @@ int SlottedPage::add_record(Record tRecord)
 	meta_data.entry_size++;
 	return 0;
 }
+
+bool SlottedPage::is_able_insert()
+{
+	int free_space_start = 8 + 9 * record_ptr_arr.size();
+	if (free_space_start < meta_data.free_space_end_addr) return true;
+	else return false;
+}

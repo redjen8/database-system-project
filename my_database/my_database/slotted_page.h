@@ -35,4 +35,5 @@ public:
 	void print_slotted_page();
 	int write_page_on_disk();
 	int add_record(Record tRecord);
+	bool is_able_insert();
 };

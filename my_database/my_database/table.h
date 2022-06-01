@@ -20,6 +20,6 @@ public:
 	Table();
 	Table(column_info column, std::vector<record_store_loc> record_loc_list);
 	int load_from_file_location();
-	int insert_new_record();
+	int insert_new_record(std::string file_name, int start, int end);
 	Record search_by_id(std::string search_key);
 };

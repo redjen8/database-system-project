@@ -21,7 +21,7 @@ private:
 public:
 	SystemModule();
 	int insert_new_table(Table new_table);
-	int insert_new_record();
+	int insert_new_record(block_store_loc next_loc);
 	int search_by_pk(std::string key);
 	int get_table_column_list(int table_idx);
 };

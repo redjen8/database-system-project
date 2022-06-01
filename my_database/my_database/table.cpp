@@ -30,8 +30,9 @@ int Table::load_from_file_location()
 	return 0;
 }
 
-int Table::insert_new_record()
+int Table::insert_new_record(std::string file_name, int start, int end)
 {
+	SlottedPage read_page = SlottedPage(file_name, column_meta, start, end);
 	return 0;
 }
 
