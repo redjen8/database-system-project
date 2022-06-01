@@ -3,9 +3,9 @@
 #include "column_info.h"
 #include "record.h"
 
-Table::Table()
+Table::Table(column_info column)
 {
-
+	column_meta = column;
 }
 
 Table::Table(column_info column, std::vector<record_store_loc> record_ptr_list)

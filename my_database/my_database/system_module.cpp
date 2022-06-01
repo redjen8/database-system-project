@@ -30,7 +30,7 @@ int SystemModule::insert_new_table(Table new_table)
 	return 0;
 }
 
-int SystemModule::insert_new_record(block_store_loc next_loc)
+int SystemModule::insert_new_record()
 {
 	return 0;
 }

@@ -17,7 +17,7 @@ private:
 	std::vector<Record> record_list;
 	std::vector<record_store_loc> record_loc_list;
 public:
-	Table();
+	Table(column_info column);
 	Table(column_info column, std::vector<record_store_loc> record_loc_list);
 	int load_from_file_location();
 	int insert_new_record(std::string file_name, int start, int end);
