@@ -1,0 +1,36 @@
+{
+   "FILE_MAX_BLOCK_NUM" : 1024,
+   "NEXT_BLOCK_LOC" : 
+   {
+      "file_name" : "data.db",
+      "loc" : 0
+   },
+   "table_meta_data" : 
+   [
+      {
+         "block_location" : 
+         [
+            {
+               "end_loc" : 49152,
+               "file_name" : "data.db",
+               "start_loc" : 4096
+            },
+            {
+               "end_loc" : 4096,
+               "file_name" : "data.db",
+               "start_loc" : 0
+            }
+         ],
+         "fixed_column_cnt" : 2,
+         "next_insert_location" : 
+         {
+            "end_loc" : 4096,
+            "file_name" : "data.db",
+            "start_loc" : 0
+         },
+         "table_column_list" : [ "student_id", "grade", "name", "major" ],
+         "table_name" : "student",
+         "variable_column_cnt" : 2
+      }
+   ]
+}

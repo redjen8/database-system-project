@@ -141,6 +141,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="byte_convert.cpp" />
+    <ClCompile Include="jsoncpp\jsoncpp.cpp" />
     <ClCompile Include="record.cpp" />
     <ClCompile Include="slotted_page.cpp" />
     <ClCompile Include="test_record.cpp" />
@@ -148,6 +149,8 @@
   <ItemGroup>
     <ClInclude Include="byte_convert.h" />
     <ClInclude Include="column_info.h" />
+    <ClInclude Include="jsoncpp\json\json-forwards.h" />
+    <ClInclude Include="jsoncpp\json\json.h" />
     <ClInclude Include="record.h" />
     <ClInclude Include="slotted_page.h" />
   </ItemGroup>
