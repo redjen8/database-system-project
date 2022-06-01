@@ -93,7 +93,14 @@ int main()
 			case 4:
 			{
 				// 테이블의 PK 값으로 레코드 검색
-				//system_module.search_by_pk();
+				cout << "Please input table name to search by pk value : ";
+				string table_name_input;
+				cin >> table_name_input;
+				cout << "Please input value for search pk value : ";
+				string query;
+				cin >> query;
+				int idx = system_module.table_name_index_map[table_name_input];
+				system_module.search_by_pk(idx, query);
 				break;
 			}
 			case 5:

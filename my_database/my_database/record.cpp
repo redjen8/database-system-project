@@ -22,7 +22,7 @@ Record::Record(unsigned char* byte_arr, int arr_length, column_info column_meta)
 	record_byte_arr.clear();
 	byte_arr_size = 0;
 
-	print_byte_arr(byte_arr, arr_length);
+	//print_byte_arr(byte_arr, arr_length);
 	int byte_cursor = 0;
 	unsigned int column_length = column_meta.column_type.size();
 	// null bitmap √ﬂ√‚

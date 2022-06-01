@@ -92,8 +92,29 @@ int SystemModule::insert_new_record()
 	return 0;
 }
 
-int SystemModule::search_by_pk(std::string key)
+int SystemModule::search_by_pk(int table_idx, std::string key)
 {
+	Table target_table = table_list[table_idx];
+	target_table.load_from_file_location();
+	std::vector<Record> record_list = target_table.get_record_list();
+	int pk_idx = target_table.get_table_meta().pk_column_idx;
+	for (int i = 0; i < record_list.size(); i++)
+	{
+		std::string search_value;
+		if (pk_idx > target_table.get_table_meta().fixed_column_cnt)
+		{
+			search_value = record_list[i].get_var_column_list().at(pk_idx);
+		}
+		else
+		{
+			search_value = record_list[i].get_fixed_column_list().at(pk_idx);
+		}
+		if (search_value.compare(key) == 0)
+		{
+			record_list[i].print_record();
+			return 0;
+		}
+	}
 	return 0;
 }
 
