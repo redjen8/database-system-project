@@ -1,11 +1,6 @@
 {
     "FILE_MAX_BLOCK_NUM" : 1024,
-    "NEXT_BLOCK_LOC" : 
-    {
-        "end_loc" : 4096,
-        "file_name" : "data.db",
-        "start_loc" : 0
-    },
+    "next_insert_file_name" : "data.db",
     "table_meta_data" : 
     [
         {
@@ -19,17 +14,57 @@
             ],
             "fixed_column_cnt" : 2,
             "fixed_column_length" : [ 5, 1 ],
+            "pk_column_idx" : 0,
             "table_column_list" : [ "student_id", "grade", "name", "major" ],
             "table_name" : "student",
             "variable_column_cnt" : 2
         },
         {
-            "block_location" : {},
-            "fixed_column_cnt" : 2,
+            "block_location" : 
+            [
+                {
+                    "end_loc" : 12288,
+                    "file_name" : "data.db",
+                    "start_loc" : 8192
+                }
+            ],
+            "fixed_column_cnt" : 1,
             "fixed_column_length" : [ 5 ],
             "pk_column_idx" : 0,
             "table_column_list" : [ "id", "name", "hobby" ],
-            "table_name" : "hello",
+            "table_name" : "hobby",
+            "variable_column_cnt" : 2
+        },
+        {
+            "block_location" : 
+            [
+                {
+                    "end_loc" : 16384,
+                    "file_name" : "data.db",
+                    "start_loc" : 12288
+                }
+            ],
+            "fixed_column_cnt" : 1,
+            "fixed_column_length" : [ 5 ],
+            "pk_column_idx" : 0,
+            "table_column_list" : [ "inst_id", "dept_name", "name" ],
+            "table_name" : "instructor",
+            "variable_column_cnt" : 2
+        },
+        {
+            "block_location" : 
+            [
+                {
+                    "end_loc" : 20480,
+                    "file_name" : "data.db",
+                    "start_loc" : 16384
+                }
+            ],
+            "fixed_column_cnt" : 3,
+            "fixed_column_length" : [ 8, 1, 7 ],
+            "pk_column_idx" : 0,
+            "table_column_list" : [ "subject_id", "credit", "semester", "subject_name" ],
+            "table_name" : "subject",
             "variable_column_cnt" : 1
         }
     ]
