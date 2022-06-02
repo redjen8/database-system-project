@@ -244,9 +244,18 @@ int SystemModule::get_table_column_list(int table_idx)
 {
 	Table target_table = table_list[table_idx];
 	std::vector<std::string> column_name_list = target_table.get_table_meta().table_column_list;
+	int pk_idx = target_table.get_table_meta().pk_column_idx;
 	for (int i = 0; i < column_name_list.size(); i++)
 	{
-		std::cout << "column " << std::to_string(i) << " : " << column_name_list[i] << std::endl;
+		std::cout << "column " << std::to_string(i) << " : " << column_name_list[i];
+		if (i == pk_idx)
+		{
+			std::cout << " (PK)" << std::endl;
+		}
+		else
+		{
+			std::cout << std::endl;
+		}
 	}
 	return 0;
 }
