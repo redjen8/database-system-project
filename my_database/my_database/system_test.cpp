@@ -37,8 +37,6 @@ int json_test()
 		table_meta_data["table_meta_data"].append(table1);
 
 		table_meta_data["FILE_MAX_BLOCK_NUM"] = 1024;
-		table_meta_data["NEXT_BLOCK_LOC"]["file_name"] = "data.db";
-		table_meta_data["NEXT_BLOCK_LOC"]["loc"] = 0;
 
 		Json::StreamWriterBuilder builder;
 		builder["commentStyle"] = "None";
@@ -73,7 +71,7 @@ int json_test()
 	return 0;
 }
 
-int test_record()
+int record_test()
 {
 	std::vector<std::string> column_name = { "student_id", "grade", "name", "major" };
 	std::vector<bool> column_type = { false, false, true, true };

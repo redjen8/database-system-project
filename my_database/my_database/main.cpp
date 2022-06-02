@@ -13,6 +13,7 @@ void show_menu()
 	cout << "(3) Select every data in table" << endl;
 	cout << "(4) Select a record by its primary key" << endl;
 	cout << "(5) Select column list of a table" << endl;
+	cout << "(6) exit" << endl;
 	cout << "------------------------------" << endl;
 }
 
@@ -118,6 +119,11 @@ int main()
 				int idx = system_module.table_name_index_map[table_name_input];
 				system_module.get_table_column_list(idx);
 				break;
+			}
+			case 6:
+			{
+				cout << "Terminating Program.." << endl;
+				return 0;
 			}
 			default:
 			{

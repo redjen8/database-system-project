@@ -97,3 +97,9 @@ column_info Table::get_column_meta()
 {
 	return column_meta;
 }
+
+int Table::insert_new_record_loc(record_store_loc new_location)
+{
+	record_loc_list.push_back(new_location);
+	return 0;
+}

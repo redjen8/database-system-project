@@ -27,4 +27,5 @@ public:
 	std::vector<Record> get_record_list();
 	table_meta_data get_table_meta();
 	column_info get_column_meta();
+	int insert_new_record_loc(record_store_loc new_location);
 };

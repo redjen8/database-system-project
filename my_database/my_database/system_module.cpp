@@ -3,6 +3,8 @@
 #include <iostream>
 #include <fstream>
 #include <filesystem>
+#include <string>
+#include <limits>
 #include "jsoncpp/json/json.h"
 #include "table.h"
 #include "slotted_page.h"
@@ -95,13 +97,16 @@ int SystemModule::insert_new_record(int table_idx)
 	//target_table.load_from_file_location();
 	std::vector<std::string> column_name_list = target_table.get_table_meta().table_column_list;
 	std::vector<std::string> new_column_value;
+	std::cin.ignore();
 	for (int i = 0; i < column_name_list.size(); i++)
 	{
 		std::string input;
+		
 		while (true)
 		{
-			std::cout << "Insert value for column name : " << column_name_list[i];
-			std::cin >> input;
+			input = "";
+			std::cout << "Insert value for column name " << column_name_list[i] << " : ";
+			std::getline(std::cin, input);
 			if (i < target_table.get_table_meta().fixed_column_cnt)
 			{
 				if (input.length() > target_table.get_table_meta().fixed_column_length[i])
@@ -113,6 +118,7 @@ int SystemModule::insert_new_record(int table_idx)
 			else break;
 		}
 		new_column_value.push_back(input);
+		
 	}
 	Record new_record = Record(new_column_value, target_table.get_column_meta());
 	std::vector<block_store_loc> target_block_location = target_table.get_table_meta().block_location;
@@ -143,21 +149,39 @@ int SystemModule::insert_new_record(int table_idx)
 		{
 			// 기존 파일에 block만 추가하는 경우
 			int current_file_block_idx = current_file_size / PAGE_SIZE;
-			SlottedPage new_page_to_disk = SlottedPage(update_file_name, target_table.get_column_meta(), current_file_block_idx + 1);
+
+			int new_start_loc = (current_file_block_idx)*PAGE_SIZE;
+			int new_end_loc = (current_file_block_idx + 1) * PAGE_SIZE;
+
+			SlottedPage new_page_to_disk = SlottedPage(update_file_name, target_table.get_column_meta(), current_file_block_idx);
+
 			new_page_to_disk.add_record(new_record);
 			new_page_to_disk.write_page_on_disk();
 
 			std::string table_name = target_table.get_table_meta().table_name;
-			std::vector<block_store_loc> table_block_loc_list = target_table.get_table_meta().block_location;
 
-			for (int i = 0; i < table_block_loc_list.size(); i++)
-			{
-
-			}
+			table_list[table_idx].get_table_meta().block_location.push_back(block_store_loc{update_file_name, new_start_loc, new_end_loc});
+			table_list[table_idx].insert_new_record_loc(record_store_loc{update_file_name, new_start_loc, new_end_loc});
 
 			for (auto it = system_meta_json["table_meta_data"].begin(); it != system_meta_json["table_meta_data"].end(); it++)
 			{
-				
+				if (table_name.compare((*it)["table_name"].asCString()) == 0)
+				{
+					Json::Value new_block_location;
+					new_block_location["file_name"] = update_file_name;
+					new_block_location["start_loc"] = new_start_loc;
+					new_block_location["end_loc"] = new_end_loc;
+					(*it)["block_location"].append(new_block_location);
+
+					Json::StreamWriterBuilder builder;
+					builder["commentStyle"] = "None";
+					builder["indentation"] = "    ";
+
+					std::unique_ptr<Json::StreamWriter> writer(builder.newStreamWriter());
+					std::ofstream outputFileStream(META_DATA_FILE_NAME);
+					writer->write(system_meta_json, &outputFileStream);
+					break;
+				}
 			}
 		}
 		else
@@ -214,6 +238,11 @@ int SystemModule::get_table_every_data(int table_idx)
 	Table target_table = table_list[table_idx];
 	target_table.load_from_file_location();
 	std::vector<Record> record_list = target_table.get_record_list();
+	if (record_list.size() == 0)
+	{
+		std::cout << "table has no records. Please insert new record for table : " << target_table.get_table_meta().table_name << std::endl;
+		return 0;
+	}
 	for (int i = 0; i < record_list.size(); i++)
 	{
 		record_list[i].print_record();
@@ -277,7 +306,7 @@ Json::Value SystemModule::convert_meta_to_json(table_meta_data meta)
 	}
 	else
 	{
-		table_meta_json["block_location"] = Json::objectValue;
+		table_meta_json["block_location"] = Json::arrayValue;
 	}
 
 	for (int i = 0; i < meta.fixed_column_length.size(); i++)
