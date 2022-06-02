@@ -11,7 +11,6 @@ class SystemModule
 {
 private:
 	std::vector<Table> table_list;
-	block_store_loc next_block_ptr;
 	Json::Value system_meta_json;
 	std::string next_insert_file_name;
 public:
@@ -25,5 +24,6 @@ public:
 	table_meta_data convert_json_to_meta(Json::Value data);
 	Json::Value convert_meta_to_json(table_meta_data meta);
 	int write_meta_data_to_file();
-	std::vector<Table> get_table_list();
+	void get_table_name_list();
 };
+

@@ -85,7 +85,8 @@ int SystemModule::insert_new_table(Table new_table)
 		table_meta_data table_meta = new_table.get_table_meta();
 		Json::Value write_data = convert_meta_to_json(table_meta);
 		system_meta_json["table_meta_data"].append(write_data);
-		
+		table_list.push_back(new_table);
+		table_name_index_map[new_table.get_table_meta().table_name] = table_name_index_map.size();
 		write_meta_data_to_file();
 	}
 	return 0;
@@ -235,6 +236,7 @@ int SystemModule::search_by_pk(int table_idx, std::string key)
 			return 0;
 		}
 	}
+	std::cout << "Cannot find record with PK value = " << key << std::endl;
 	return 0;
 }
 
@@ -308,8 +310,8 @@ Json::Value SystemModule::convert_meta_to_json(table_meta_data meta)
 	{
 		table_meta_json["table_column_list"].append(meta.table_column_list[i]);
 	}
-	table_meta_json["variable_column_cnt"] = meta.fixed_column_cnt;
-	table_meta_json["fixed_column_cnt"] = meta.variable_column_cnt;
+	table_meta_json["variable_column_cnt"] = meta.variable_column_cnt;
+	table_meta_json["fixed_column_cnt"] = meta.fixed_column_cnt;
 
 	if (meta.block_location.size() > 0)
 	{
@@ -348,7 +350,12 @@ int SystemModule::write_meta_data_to_file()
 	return 0;
 }
 
-std::vector<Table> SystemModule::get_table_list()
+void SystemModule::get_table_name_list()
 {
-	return table_list;
+	std::cout << "Table List :: ";
+	for (int i = 0; i < table_list.size(); i++)
+	{
+		std::cout << table_list[i].get_table_meta().table_name << ", ";
+	}
+	std::cout << std::endl;
 }

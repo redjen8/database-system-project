@@ -17,17 +17,6 @@ void show_menu()
 	cout << "------------------------------" << endl;
 }
 
-void print_table_name_list(SystemModule system)
-{
-	vector<Table> table_list = system.get_table_list();
-	cout << "Table List :: ";
-	for (int i = 0; i < table_list.size(); i++)
-	{
-		cout << table_list[i].get_table_meta().table_name << ", ";
-	}
-	cout << endl;
-}
-
 int main()
 {
 	SystemModule system_module = SystemModule();
@@ -48,7 +37,12 @@ int main()
 				cout << "Please input new table name : ";
 				string table_name;
 				cin >> table_name;
-
+				if (system_module.table_name_index_map.count(table_name) != 0)
+				{
+					cout << "Table with same name : " << table_name << " already exists!" << endl;
+					system_module.get_table_name_list();
+					break;
+				}
 				cout << "How many fixed length columns will be in the new table? : ";
 				int fixed_column_length = 0;
 				cin >> fixed_column_length;
@@ -102,7 +96,7 @@ int main()
 				if (system_module.table_name_index_map.count(table_name_input) == 0)
 				{
 					cout << "No tables found with name : " << table_name_input << endl;
-					print_table_name_list(system_module);
+					system_module.get_table_name_list();
 					break;
 				}
 				int idx = system_module.table_name_index_map[table_name_input];
@@ -120,7 +114,7 @@ int main()
 				if (system_module.table_name_index_map.count(table_name_input) == 0)
 				{
 					cout << "No tables found with name : " << table_name_input << endl;
-					print_table_name_list(system_module);
+					system_module.get_table_name_list();
 					break;
 				}
 				int idx = system_module.table_name_index_map[table_name_input];
@@ -138,7 +132,7 @@ int main()
 				if (system_module.table_name_index_map.count(table_name_input) == 0)
 				{
 					cout << "No tables found with name : " << table_name_input << endl;
-					print_table_name_list(system_module);
+					system_module.get_table_name_list();
 					break;
 				}
 				cout << "Please input value for search pk value : ";
@@ -159,7 +153,7 @@ int main()
 				if (system_module.table_name_index_map.count(table_name_input) == 0)
 				{
 					cout << "No tables found with name : " << table_name_input << endl;
-					print_table_name_list(system_module);
+					system_module.get_table_name_list();
 					break;
 				}
 				int idx = system_module.table_name_index_map[table_name_input];
