@@ -17,6 +17,17 @@ void show_menu()
 	cout << "------------------------------" << endl;
 }
 
+void print_table_name_list(SystemModule system)
+{
+	vector<Table> table_list = system.get_table_list();
+	cout << "Table List :: ";
+	for (int i = 0; i < table_list.size(); i++)
+	{
+		cout << table_list[i].get_table_meta().table_name << ", ";
+	}
+	cout << endl;
+}
+
 int main()
 {
 	SystemModule system_module = SystemModule();
@@ -26,16 +37,19 @@ int main()
 		show_menu();
 		int user_select = 0;
 		cin >> user_select;
+		std::cout << "\x1B[2J\x1B[H";
 		switch (user_select)
 		{
 			case 1:
 			{
 				// 테이블 삽입
-				cout << "Please input new table name." << endl;
+				cout << "Table Insert" << endl;
+				cout << "------------------------------" << endl;
+				cout << "Please input new table name : ";
 				string table_name;
 				cin >> table_name;
 
-				cout << "How many fixed length columns will be in the new table?" << endl;
+				cout << "How many fixed length columns will be in the new table? : ";
 				int fixed_column_length = 0;
 				cin >> fixed_column_length;
 				vector<string> column_name_arr;
@@ -44,30 +58,30 @@ int main()
 
 				for (int i = 0; i < fixed_column_length; i++)
 				{
-					cout << "Please input name of index (" + to_string(i) + ") fixed length column." << endl;
+					cout << "Please input name of index (" + to_string(i) + ") fixed length column : ";
 					string column_name = "";
 					cin >> column_name;
 					column_name_arr.push_back(column_name);
-					cout << "Please input length of index (" + to_string(i) + ") fixed length column." << endl;
+					cout << "Please input length of index (" + to_string(i) + ") fixed length column : ";
 					int column_length = 0;
 					cin >> column_length;
 					fixed_column_length_arr.push_back(column_length);
 					column_type_arr.push_back(false);
 				}
-				cout << "How many variable length columns will be in the new table?" << endl;
+				cout << "How many variable length columns will be in the new table? : ";
 				int variable_column_length = 0;
 				cin >> variable_column_length;
 				
 				for (int i = 0; i < variable_column_length; i++)
 				{
-					cout << "Please input name of index (" + to_string(i) + ") variable length column." << endl;
+					cout << "Please input name of index (" + to_string(i) + ") variable length column : ";
 					string column_name = "";
 					cin >> column_name;
 					column_name_arr.push_back(column_name);
 					column_type_arr.push_back(true);
 				}
 				
-				cout << "Which index would be the primary column for the search?" << endl;
+				cout << "Which index would be the primary column for the search? : ";
 				int pk_index;
 				cin >> pk_index;
 
@@ -80,9 +94,17 @@ int main()
 			case 2:
 			{
 				// 레코드를 테이블에 삽입
+				cout << "Insert Record To Table" << endl;
+				cout << "------------------------------" << endl;
 				cout << "Please input table name to insert record : ";
 				string table_name_input;
 				cin >> table_name_input;
+				if (system_module.table_name_index_map.count(table_name_input) == 0)
+				{
+					cout << "No tables found with name : " << table_name_input << endl;
+					print_table_name_list(system_module);
+					break;
+				}
 				int idx = system_module.table_name_index_map[table_name_input];
 				system_module.insert_new_record(idx);
 				break;
@@ -90,9 +112,17 @@ int main()
 			case 3:
 			{
 				// 테이블의 모든 데이터 출력
+				cout << "Select * From Table" << endl;
+				cout << "------------------------------" << endl;
 				cout << "Please input table name to search every data : ";
 				string table_name_input;
 				cin >> table_name_input;
+				if (system_module.table_name_index_map.count(table_name_input) == 0)
+				{
+					cout << "No tables found with name : " << table_name_input << endl;
+					print_table_name_list(system_module);
+					break;
+				}
 				int idx = system_module.table_name_index_map[table_name_input];
 				system_module.get_table_every_data(idx);
 				break;
@@ -100,9 +130,17 @@ int main()
 			case 4:
 			{
 				// 테이블의 PK 값으로 레코드 검색
+				cout << "Select * From Table Where PK = ?" << endl;
+				cout << "------------------------------" << endl;
 				cout << "Please input table name to search by pk value : ";
 				string table_name_input;
 				cin >> table_name_input;
+				if (system_module.table_name_index_map.count(table_name_input) == 0)
+				{
+					cout << "No tables found with name : " << table_name_input << endl;
+					print_table_name_list(system_module);
+					break;
+				}
 				cout << "Please input value for search pk value : ";
 				string query;
 				cin >> query;
@@ -113,9 +151,17 @@ int main()
 			case 5:
 			{
 				// 테이블의 컬럼 목록 출력
+				cout << "Select Column List of Table" << endl;
+				cout << "------------------------------" << endl;
 				cout << "Please input table name to search column list : ";
 				string table_name_input;
 				cin >> table_name_input;
+				if (system_module.table_name_index_map.count(table_name_input) == 0)
+				{
+					cout << "No tables found with name : " << table_name_input << endl;
+					print_table_name_list(system_module);
+					break;
+				}
 				int idx = system_module.table_name_index_map[table_name_input];
 				system_module.get_table_column_list(idx);
 				break;

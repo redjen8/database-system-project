@@ -35,7 +35,7 @@ SystemModule::SystemModule()
 		std::cerr << "Failed to parse json : " << reader.getFormattedErrorMessages() << std::endl;
 	}
 	system_meta_json = read_data;
-
+	next_insert_file_name = read_data["next_insert_file_name"].asCString();
 	Json::Value table_meta = read_data["table_meta_data"];
 	int cnt = 0;
 	for (auto i = table_meta.begin(); i != table_meta.end(); i++)
@@ -71,6 +71,12 @@ SystemModule::SystemModule()
 		table_name_index_map.insert({ table_name, cnt });
 		cnt++;
 	}
+	std::cout << "Finished loading total " + std::to_string(table_list.size()) + " table from meta data." << std::endl << "Table List :: ";
+	for (int i = 0; i < table_list.size(); i++)
+	{
+		std::cout << table_list[i].get_table_meta().table_name << ", ";
+	}
+	std::cout << std::endl;
 }
 
 int SystemModule::insert_new_table(Table new_table)
@@ -79,14 +85,8 @@ int SystemModule::insert_new_table(Table new_table)
 		table_meta_data table_meta = new_table.get_table_meta();
 		Json::Value write_data = convert_meta_to_json(table_meta);
 		system_meta_json["table_meta_data"].append(write_data);
-
-		Json::StreamWriterBuilder builder;
-		builder["commentStyle"] = "None";
-		builder["indentation"] = "    ";
-
-		std::unique_ptr<Json::StreamWriter> writer(builder.newStreamWriter());
-		std::ofstream outputFileStream(META_DATA_FILE_NAME);
-		writer->write(system_meta_json, &outputFileStream);
+		
+		write_meta_data_to_file();
 	}
 	return 0;
 }
@@ -123,7 +123,7 @@ int SystemModule::insert_new_record(int table_idx)
 	Record new_record = Record(new_column_value, target_table.get_column_meta());
 	std::vector<block_store_loc> target_block_location = target_table.get_table_meta().block_location;
 	bool insert_flag = false;
-	std::string update_file_name = DEFAULT_DB_FILE;
+	std::string update_file_name = next_insert_file_name;
 	for (int i = 0; i < target_block_location.size(); i++)
 	{
 		std::string file_name = target_block_location[i].file_name;
@@ -173,13 +173,7 @@ int SystemModule::insert_new_record(int table_idx)
 					new_block_location["end_loc"] = new_end_loc;
 					(*it)["block_location"].append(new_block_location);
 
-					Json::StreamWriterBuilder builder;
-					builder["commentStyle"] = "None";
-					builder["indentation"] = "    ";
-
-					std::unique_ptr<Json::StreamWriter> writer(builder.newStreamWriter());
-					std::ofstream outputFileStream(META_DATA_FILE_NAME);
-					writer->write(system_meta_json, &outputFileStream);
+					write_meta_data_to_file();
 					break;
 				}
 			}
@@ -187,10 +181,32 @@ int SystemModule::insert_new_record(int table_idx)
 		else
 		{
 			// 기존 파일이 꽉 차서 새 파일을 써야하는 경우
-			std::string new_file_name;
+			size_t name_prefix = next_insert_file_name.find(".");
+			if (name_prefix != std::string::npos)
+			{
+				name_prefix += 2;
+				std::string file_number = next_insert_file_name.substr(name_prefix);
+				int file_number_int = 0;
+				if (file_number.compare(""))
+				{
+					file_number_int = 1;
+				}
+				else
+				{
+					file_number_int = std::stoi(file_number);
+				}
+				next_insert_file_name = "data.db" + std::to_string(file_number_int);
+			}
+			else
+			{
+				// file name format error
+			}
+			std::string new_file_name = next_insert_file_name;
 			SlottedPage new_page_to_disk = SlottedPage(new_file_name, target_table.get_column_meta(), 0);
 			new_page_to_disk.add_record(new_record);
 			new_page_to_disk.write_page_on_disk();
+			system_meta_json["next_insert_file_name"] = next_insert_file_name;
+			
 		}
 	}
 	return 0;
@@ -243,8 +259,10 @@ int SystemModule::get_table_every_data(int table_idx)
 		std::cout << "table has no records. Please insert new record for table : " << target_table.get_table_meta().table_name << std::endl;
 		return 0;
 	}
+	std::cout << "Printing total " + std::to_string(record_list.size()) + " records.." << std::endl;
 	for (int i = 0; i < record_list.size(); i++)
 	{
+		std::cout << "Record index (" + std::to_string(i) + ")" << std::endl;
 		record_list[i].print_record();
 	}
 	return 0;
@@ -316,4 +334,21 @@ Json::Value SystemModule::convert_meta_to_json(table_meta_data meta)
 
 	table_meta_json["pk_column_idx"] = meta.pk_column_idx;
 	return table_meta_json;
+}
+
+int SystemModule::write_meta_data_to_file()
+{
+	Json::StreamWriterBuilder builder;
+	builder["commentStyle"] = "None";
+	builder["indentation"] = "    ";
+
+	std::unique_ptr<Json::StreamWriter> writer(builder.newStreamWriter());
+	std::ofstream outputFileStream(META_DATA_FILE_NAME);
+	writer->write(system_meta_json, &outputFileStream);
+	return 0;
+}
+
+std::vector<Table> SystemModule::get_table_list()
+{
+	return table_list;
 }
