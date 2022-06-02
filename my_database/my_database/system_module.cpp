@@ -119,8 +119,8 @@ int SystemModule::insert_new_record(int table_idx)
 			else break;
 		}
 		new_column_value.push_back(input);
-		
 	}
+
 	Record new_record = Record(new_column_value, target_table.get_column_meta());
 	std::vector<block_store_loc> target_block_location = target_table.get_table_meta().block_location;
 	bool insert_flag = false;
@@ -196,7 +196,7 @@ int SystemModule::insert_new_record(int table_idx)
 				{
 					file_number_int = std::stoi(file_number);
 				}
-				next_insert_file_name = "data.db" + std::to_string(file_number_int);
+				next_insert_file_name = "data" + std::to_string(file_number_int) + ".db";
 			}
 			else
 			{
@@ -206,8 +206,25 @@ int SystemModule::insert_new_record(int table_idx)
 			SlottedPage new_page_to_disk = SlottedPage(new_file_name, target_table.get_column_meta(), 0);
 			new_page_to_disk.add_record(new_record);
 			new_page_to_disk.write_page_on_disk();
+
+			std::string table_name = target_table.get_table_meta().table_name;
 			system_meta_json["next_insert_file_name"] = next_insert_file_name;
-			
+			for (auto it = system_meta_json["table_meta_data"].begin(); it != system_meta_json["table_meta_data"].end(); it++)
+			{
+				if (table_name.compare((*it)["table_name"].asCString()) == 0)
+				{
+					Json::Value new_block_location;
+					new_block_location["file_name"] = new_file_name;
+					new_block_location["start_loc"] = 0;
+					new_block_location["end_loc"] = PAGE_SIZE;
+					(*it)["block_location"].append(new_block_location);
+
+					write_meta_data_to_file();
+					break;
+				}
+			}
+			table_list[table_idx].get_table_meta().block_location.push_back(block_store_loc{ new_file_name, 0, PAGE_SIZE });
+			table_list[table_idx].insert_new_record_loc(record_store_loc{ new_file_name, 0, PAGE_SIZE });
 		}
 	}
 	return 0;
